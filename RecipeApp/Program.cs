@@ -1,9 +1,19 @@
+using Microsoft.EntityFrameworkCore;
+using RecipeApp.Data;
+
 var builder = WebApplication.CreateBuilder(args);
+
+
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseSqlite(builder.Configuration.GetConnectionString("Default")));
+
+builder.Services.AddHttpClient();
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
+await DbInitializer.SeedData(app);
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
