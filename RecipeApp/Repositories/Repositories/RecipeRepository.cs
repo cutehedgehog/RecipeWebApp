@@ -12,7 +12,7 @@ public class RecipeRepository: IRecipeRepository
 
     protected readonly DbSet<Recipe> _dbSet;
 
-    protected RecipeRepository(AppDbContext context)
+    public RecipeRepository(AppDbContext context)
     {
         _context = context;
         _dbSet = context.Set<Recipe>();

@@ -1,0 +1,76 @@
+﻿@page
+@model RecipeApp.Pages.IndexModel
+@{
+    ViewData["Title"] = "AutoComplete Page";
+}
+<body>
+    <datalist id="foodlist">
+
+        <option value="one"></option>
+        <option value="two"></option>
+        <option value="three"></option>
+
+    </datalist>
+
+    <input type="text" list="foodlist" autocomplete=true id="inputItem" />
+    <!--<form method="post">
+        <input type="text" id="autocomplete" asp-for="SearchTerm" autocomplete="off" list="autocomplete-list" />
+        <datalist id="autocomplete-list">
+    @foreach (var item in Model.AutoCompleteItems)
+    {
+                    <option value="@item.Name" />
+    }
+        </datalist>
+        <ul id="selectedItems">
+    @foreach (var item in Model.SelectedItems)
+    {
+                    <li>@item</li>
+    }
+        </ul>
+    </form>-->
+
+
+@section Scripts {
+    <script>
+        var textbox = document.getElementById("inputItem");
+        console.log("test");
+        textbox.addEventListener("input", function (e) {
+
+                var isInputEvent = (Object.prototype.toString.call(e).indexOf("InputEvent") > -1);
+
+                if (!isInputEvent)
+                    alert("Selected: " + e.target.value);
+                    console.log("test");
+            }, false);
+    </script>
+        <!--   <script>
+                var autocompleteData = @Html.Raw(Json.Serialize(Model.AutoCompleteItems));
+
+                document.addEventListener("DOMContentLoaded", function () {
+                    var autocompleteInput = document.getElementById("autocomplete");
+                    var selectedItemsList = document.getElementById("selectedItems");
+
+                    autocompleteInput.addEventListener("input", function (e) {
+                        var inputText = e.target.value.toLowerCase();
+                        var matchingItems = autocompleteData.filter(function (item) {
+                            return item.toLowerCase().includes(inputText);
+                        });
+
+                        console.log(matchingItems);
+                    });
+
+                    autocompleteInput.addEventListener("click", function (e) {
+                        var selectedValue = e.target.value;
+
+                        if (autocompleteData.includes(selectedValue)) {
+                            selectedItemsList.innerHTML += "<li>" + selectedValue + "</li>";
+                            // Update the model with the selected item
+                            autocompleteData.push(selectedValue);
+                            document.getElementById("autocomplete").value = ""; // Clear the input field
+                            document.querySelector("form").submit();
+                        }
+                    });
+                });
+            </script>-->
+}
+</body>
