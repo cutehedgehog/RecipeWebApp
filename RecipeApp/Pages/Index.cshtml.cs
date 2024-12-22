@@ -5,18 +5,21 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using RecipeApp.Models;
 using RecipeApp.Repositories.Interfaces;
+using RecipeApp.Repositories;
 
 namespace RecipeApp.Pages;
 [IgnoreAntiforgeryToken]
 public class IndexModel : PageModel
 {
     private readonly IIngredientRepository _repository;
+    private readonly IRecipeRepository _recipeRepository;
     private const string SelectedItemsSessionKey = "SelectedItems";
 
 
-    public IndexModel(IIngredientRepository repository)
+    public IndexModel(IIngredientRepository repository, IRecipeRepository recipeRepository)
     {
         _repository = repository;
+        _recipeRepository = recipeRepository;
     }
 
     public List<Ingredient> AutoCompleteItems { get; set; } = new List<Ingredient>();
@@ -67,4 +70,29 @@ public class IndexModel : PageModel
         }
         return new OkResult();
     }
+    public List<Recipe> Recipes { get; set; } = new List<Recipe>();
+
+    public async Task<IActionResult> OnPostGetRecipes([FromBody] IngredientRequest request)
+    {
+        Recipes = (await _recipeRepository.GetAllAsync()).ToList();
+        var ingredients = await _recipeRepository.GetIngredientsByRecipeIdAsync(Recipes[1].Id);
+        foreach (var i in ingredients)
+        {
+            Console.WriteLine(i.Name);
+        }
+        
+        if (request.Ingredients != null && request.Ingredients.Any())
+        {
+            Recipes = await _recipeRepository.GetRecipesByIngredientSubsetAsync(request.Ingredients);
+        }
+        
+
+        return new JsonResult(Recipes.Select(r => new { r.Title, r.Instructions }));
+    }
+
+    public class IngredientRequest
+    {
+        public List<string> Ingredients { get; set; } = new List<string>();
+    }
+
 }

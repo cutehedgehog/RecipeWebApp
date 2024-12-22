@@ -14,6 +14,7 @@ builder.Services.AddRazorPages();
 builder.Services.AddControllersWithViews();
 builder.Services.AddSession();
 builder.Services.AddTransient<IIngredientRepository, IngredientRepository>();
+builder.Services.AddTransient<IRecipeRepository, RecipeRepository>();
 
 var app = builder.Build();
 await DbInitializer.SeedData(app);

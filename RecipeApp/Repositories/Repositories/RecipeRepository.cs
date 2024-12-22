@@ -2,6 +2,7 @@
 using RecipeApp.Data;
 using RecipeApp.Models;
 using RecipeApp.Repositories.Interfaces;
+using System.Collections.Generic;
 using System.Linq.Expressions;
 
 namespace RecipeApp.Repositories.Repositories;
@@ -34,6 +35,30 @@ public class RecipeRepository: IRecipeRepository
     }
     public async Task CreateAsync(Recipe entity, CancellationToken cancellationToken = default)
     {
+        _dbSet.Add(entity);
+        await _context.SaveChangesAsync(cancellationToken);
+    }
+
+    public async Task CreateWithIngredientsAsync(Recipe entity, List<Ingredient> ingredients, CancellationToken cancellationToken = default)
+    {
+        foreach (var ingredient in ingredients)
+        {
+            var existingIngredient = await _context.Ingredients
+                .FirstOrDefaultAsync(i => i.Id == ingredient.Id, cancellationToken);
+
+            if (existingIngredient != null)
+            {
+                entity.RecipeIngredients.Add(new RecipeIngredient
+                {
+                    Recipe = entity,
+                    Ingredient = existingIngredient
+                });
+            }
+            else
+            {
+                throw new InvalidOperationException($"Ingredient with ID {ingredient.Id} does not exist.");
+            }
+        }
         _dbSet.Add(entity);
         await _context.SaveChangesAsync(cancellationToken);
     }
@@ -73,5 +98,16 @@ public class RecipeRepository: IRecipeRepository
         IQueryable<Recipe> query = _dbSet.AsNoTracking();
         return includeProperties
             .Aggregate(query, (current, includeProperty) => current.Include(includeProperty));
+    }
+
+    public async Task<List<Ingredient>> GetIngredientsByRecipeIdAsync(int recipeId, CancellationToken cancellationToken = default)
+    {
+        if (recipeId <= 0)
+            throw new ArgumentException("Invalid recipe ID", nameof(recipeId));
+
+        return await _context.RecipeIngredients
+            .Where(ri => ri.RecipeId == recipeId)
+            .Select(ri => ri.Ingredient)
+            .ToListAsync(cancellationToken);
     }
 }

@@ -20,19 +20,19 @@
         <option value="@item.Name" />
     }
 </datalist>
-
+<button id="getRecipesBtn">Get Recipes</button>
+<div id="recipesContainer" style="height: 300px; overflow-y: scroll; border: 1px solid #ccc; padding: 10px; margin-top: 10px;">
+</div>
 
 @section Scripts {
     <script type="text/javascript">
-        var textbox = document.getElementById("inputItem");
-       
-        textbox.addEventListener("input", function (e) {
-            var isInputEvent = (Object.prototype.toString.call(e).indexOf("InputEvent") > -1);
+        const textbox = document.getElementById("inputItem");
+        const datalist = document.getElementById('foodlist');
 
-            if (!isInputEvent) {
+        textbox.addEventListener('keyup', function (e) { 
+
+            if (!isKeyboardEvent(e)) {
                 var inputText = e.target.value.toLowerCase();
-                textbox.textContent = "";
-
                 fetch(`?handler=UpdateSelected&sItem=${inputText}`, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" }
@@ -42,8 +42,14 @@
                         location.reload();
                     }
                 });
+                textbox.textContent = "";
             }
-            }, false);
+        });
+
+        function isKeyboardEvent(e) {
+            return (e instanceof KeyboardEvent);
+        }
+
         document.querySelectorAll(".remove-btn").forEach(button => {
             button.addEventListener("click", function (e) {
                 const itemToRemove = e.target.getAttribute("data-item");
@@ -51,12 +57,34 @@
                     method: "POST",
                     headers: { "Content-Type": "application/json" }
                 })
-                    .then(response => {
-                        if (response.ok) {
-                            location.reload();
-                        }
-                    });
+                .then(response => {
+                    if (response.ok) {
+                        location.reload();
+                    }
+                });
             });
+        });
+
+        document.getElementById("getRecipesBtn").addEventListener("click", function () {
+            fetch("?handler=GetRecipes", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ ingredients: @Html.Raw(Json.Serialize(Model.SelectedItems)) })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    const recipesContainer = document.getElementById("recipesContainer");
+                    recipesContainer.innerHTML = "";
+                    data.forEach(recipe => {
+                        const recipeDiv = document.createElement("div");
+                        recipeDiv.className = "recipe-item";
+                        recipeDiv.textContent = recipe.title;
+                        recipeDiv.addEventListener("click", function () {
+                            alert(`Name: ${recipe.title}\n${recipe.instructions}`);
+                        });
+                        recipesContainer.appendChild(recipeDiv);
+                    });
+                });
         });
     </script>
 }
