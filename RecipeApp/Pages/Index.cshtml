@@ -20,7 +20,9 @@
         <option value="@item.Name" />
     }
 </datalist>
-
+<button id="getRecipesBtn">Get Recipes</button>
+<div id="recipesContainer" style="height: 300px; overflow-y: scroll; border: 1px solid #ccc; padding: 10px; margin-top: 10px;">
+</div>
 
 @section Scripts {
     <script type="text/javascript">
@@ -57,6 +59,30 @@
                         }
                     });
             });
+        });
+
+        document.getElementById("getRecipesBtn").addEventListener("click", function () {
+            fetch("?handler=GetRecipes", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ ingredients: @Html.Raw(Json.Serialize(Model.SelectedItems)) })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    const recipesContainer = document.getElementById("recipesContainer");
+                    console.log("test");
+                    recipesContainer.innerHTML = "";
+                    data.forEach(recipe => {
+                        console.log(recipe);
+                        const recipeDiv = document.createElement("div");
+                        recipeDiv.className = "recipe-item";
+                        recipeDiv.textContent = recipe.title;
+                        recipeDiv.addEventListener("click", function () {
+                            alert(`Name: ${recipe.title}\n${recipe.instructions}`);
+                        });
+                        recipesContainer.appendChild(recipeDiv);
+                    });
+                });
         });
     </script>
 }

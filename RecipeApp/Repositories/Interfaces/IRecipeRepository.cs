@@ -12,4 +12,5 @@ public interface IRecipeRepository
     public Task<Recipe> FirstOrDefaultAsync(Expression<Func<Recipe, bool>> filters, CancellationToken cancellationToken = default, params Expression<Func<Recipe, object>>[] includeProperties);
     public Task<IEnumerable<Recipe>> GetAllAsync(CancellationToken cancellationToken = default);
     public Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
+    public Task<List<Recipe>> GetRecipesByIngredientSubsetAsync(List<string> ingredientNames);
 }
