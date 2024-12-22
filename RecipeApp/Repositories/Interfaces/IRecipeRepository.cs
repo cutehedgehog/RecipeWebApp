@@ -4,6 +4,7 @@ using System.Linq.Expressions;
 namespace RecipeApp.Repositories.Interfaces;
 public interface IRecipeRepository
 {
+    public Task<List<Recipe>> GetRecipesByIngredientSubsetAsync(List<string> ingredientNames);
     public Task<Recipe> GetByIdAsync(int id, CancellationToken cancellationToken = default);
     public Task CreateAsync(Recipe entity, CancellationToken cancellationToken = default);
     public Task<bool> UpdateAsync(Recipe entity, CancellationToken cancellationToken = default);
