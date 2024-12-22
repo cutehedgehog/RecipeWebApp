@@ -8,11 +8,12 @@
 <body>
     <header>
         <nav>
-            <a asp-page="/Index">Главная</a>
+            <a asp-page="/Index">Home</a>
         </nav>
     </header>
     <main role="main" class="container">
         @RenderBody()
     </main>
+    @RenderSection("Scripts", required: false)
 </body>
 </html>

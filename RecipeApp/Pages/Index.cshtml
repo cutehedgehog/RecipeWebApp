@@ -1,76 +1,62 @@
 ﻿@page
 @model RecipeApp.Pages.IndexModel
 @{
-    ViewData["Title"] = "AutoComplete Page";
+    ViewData["Title"] = "Home";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
 }
-<body>
-    <datalist id="foodlist">
 
-        <option value="one"></option>
-        <option value="two"></option>
-        <option value="three"></option>
+<input type="text" list="foodlist" autocomplete=true id="inputItem" />
 
-    </datalist>
-
-    <input type="text" list="foodlist" autocomplete=true id="inputItem" />
-    <!--<form method="post">
-        <input type="text" id="autocomplete" asp-for="SearchTerm" autocomplete="off" list="autocomplete-list" />
-        <datalist id="autocomplete-list">
+<ul id="selectedItems">
+    @foreach (var sItem in Model.SelectedItems)
+    {
+        <li>@sItem</li>
+        <button class="remove-btn" data-item="@sItem">Delete</button>
+    }
+</ul>
+<datalist id="foodlist">
     @foreach (var item in Model.AutoCompleteItems)
     {
-                    <option value="@item.Name" />
+        <option value="@item.Name" />
     }
-        </datalist>
-        <ul id="selectedItems">
-    @foreach (var item in Model.SelectedItems)
-    {
-                    <li>@item</li>
-    }
-        </ul>
-    </form>-->
+</datalist>
 
 
 @section Scripts {
-    <script>
+    <script type="text/javascript">
         var textbox = document.getElementById("inputItem");
-        console.log("test");
+       
         textbox.addEventListener("input", function (e) {
+            var isInputEvent = (Object.prototype.toString.call(e).indexOf("InputEvent") > -1);
 
-                var isInputEvent = (Object.prototype.toString.call(e).indexOf("InputEvent") > -1);
+            if (!isInputEvent) {
+                var inputText = e.target.value.toLowerCase();
+                textbox.textContent = "";
 
-                if (!isInputEvent)
-                    alert("Selected: " + e.target.value);
-                    console.log("test");
+                fetch(`?handler=UpdateSelected&sItem=${inputText}`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" }
+                })
+                .then(response => {
+                    if (response.ok) {
+                        location.reload();
+                    }
+                });
+            }
             }, false);
-    </script>
-        <!--   <script>
-                var autocompleteData = @Html.Raw(Json.Serialize(Model.AutoCompleteItems));
-
-                document.addEventListener("DOMContentLoaded", function () {
-                    var autocompleteInput = document.getElementById("autocomplete");
-                    var selectedItemsList = document.getElementById("selectedItems");
-
-                    autocompleteInput.addEventListener("input", function (e) {
-                        var inputText = e.target.value.toLowerCase();
-                        var matchingItems = autocompleteData.filter(function (item) {
-                            return item.toLowerCase().includes(inputText);
-                        });
-
-                        console.log(matchingItems);
-                    });
-
-                    autocompleteInput.addEventListener("click", function (e) {
-                        var selectedValue = e.target.value;
-
-                        if (autocompleteData.includes(selectedValue)) {
-                            selectedItemsList.innerHTML += "<li>" + selectedValue + "</li>";
-                            // Update the model with the selected item
-                            autocompleteData.push(selectedValue);
-                            document.getElementById("autocomplete").value = ""; // Clear the input field
-                            document.querySelector("form").submit();
+        document.querySelectorAll(".remove-btn").forEach(button => {
+            button.addEventListener("click", function (e) {
+                const itemToRemove = e.target.getAttribute("data-item");
+                fetch(`?handler=RemoveSelected&sItem=${encodeURIComponent(itemToRemove)}`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" }
+                })
+                    .then(response => {
+                        if (response.ok) {
+                            location.reload();
                         }
                     });
-                });
-            </script>-->
+            });
+        });
+    </script>
 }
-</body>
