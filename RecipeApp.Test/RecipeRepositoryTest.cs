@@ -258,5 +258,67 @@ namespace RecipeApp.Tests
             Assert.Equal(3, result.Count());
         }
 
+        [Fact]
+        public async Task CreateWithIngredientsAsync_ShouldAddRecipeWithIngredients()
+        {
+
+            using var context = CreateContext();
+            var repository = new RecipeRepository(context);
+
+            var newRecipe = new Recipe
+            {
+                Title = "Fruit Salad",
+                Category = "Salad",
+                AreaCategory = "International",
+                Instructions = "Mix all fruits together.",
+                ImageUrl = "https://example.com/fruit-salad.jpg",
+                VideoSourceUrl = "https://example.com/fruit-salad-video.mp4"
+            };
+
+            var ingredients = new List<Ingredient>
+            {
+                new Ingredient { Id = 1, Name = "apple" },
+                new Ingredient { Id = 2, Name = "tomato" },
+                new Ingredient { Id = 5, Name = "sugar" }
+            };
+
+            await repository.CreateWithIngredientsAsync(newRecipe, ingredients);
+
+            var savedRecipe = await context.Recipes.Include(r => r.RecipeIngredients)
+                                                   .ThenInclude(ri => ri.Ingredient)
+                                                   .FirstOrDefaultAsync(r => r.Title == "Fruit Salad");
+
+            Assert.NotNull(savedRecipe);
+            Assert.Equal("Fruit Salad", savedRecipe.Title);
+            Assert.Equal(3, savedRecipe.RecipeIngredients.Count);
+            Assert.Contains(savedRecipe.RecipeIngredients, ri => ri.Ingredient.Name == "apple");
+            Assert.Contains(savedRecipe.RecipeIngredients, ri => ri.Ingredient.Name == "tomato");
+            Assert.Contains(savedRecipe.RecipeIngredients, ri => ri.Ingredient.Name == "sugar");
+        }
+
+
+        [Fact]
+        public async Task GetIngredientsByRecipeIdAsync_ShouldReturnCorrectIngredients()
+        {
+            using var context = CreateContext();
+            var repository = new RecipeRepository(context);
+
+            var ingredientsForRecipe1 = await repository.GetIngredientsByRecipeIdAsync(1);
+            var ingredientsForRecipe2 = await repository.GetIngredientsByRecipeIdAsync(2);
+            var ingredientsForRecipe3 = await repository.GetIngredientsByRecipeIdAsync(3);
+
+            Assert.Equal(3, ingredientsForRecipe1.Count);
+            Assert.Contains(ingredientsForRecipe1, i => i.Name == "apple");
+            Assert.Contains(ingredientsForRecipe1, i => i.Name == "cucumber");
+            Assert.Contains(ingredientsForRecipe1, i => i.Name == "salt");
+
+            Assert.Equal(2, ingredientsForRecipe2.Count);
+            Assert.Contains(ingredientsForRecipe2, i => i.Name == "tomato");
+            Assert.Contains(ingredientsForRecipe2, i => i.Name == "salt");
+
+            Assert.Equal(2, ingredientsForRecipe3.Count);
+            Assert.Contains(ingredientsForRecipe3, i => i.Name == "cucumber");
+            Assert.Contains(ingredientsForRecipe3, i => i.Name == "sugar");
+        }
     }
 }
