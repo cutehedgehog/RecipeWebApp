@@ -13,7 +13,7 @@ public class IngredientRepository : IIngredientRepository
 
     protected readonly DbSet<Ingredient> _dbSet;
 
-    protected IngredientRepository(AppDbContext context)
+    public IngredientRepository(AppDbContext context)
     {
         _context = context;
         _dbSet = context.Set<Ingredient>();

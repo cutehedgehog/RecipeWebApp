@@ -1,0 +1,62 @@
+﻿@page
+@model RecipeApp.Pages.IndexModel
+@{
+    ViewData["Title"] = "Home";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<input type="text" list="foodlist" autocomplete=true id="inputItem" />
+
+<ul id="selectedItems">
+    @foreach (var sItem in Model.SelectedItems)
+    {
+        <li>@sItem</li>
+        <button class="remove-btn" data-item="@sItem">Delete</button>
+    }
+</ul>
+<datalist id="foodlist">
+    @foreach (var item in Model.AutoCompleteItems)
+    {
+        <option value="@item.Name" />
+    }
+</datalist>
+
+
+@section Scripts {
+    <script type="text/javascript">
+        var textbox = document.getElementById("inputItem");
+       
+        textbox.addEventListener("input", function (e) {
+            var isInputEvent = (Object.prototype.toString.call(e).indexOf("InputEvent") > -1);
+
+            if (!isInputEvent) {
+                var inputText = e.target.value.toLowerCase();
+                textbox.textContent = "";
+
+                fetch(`?handler=UpdateSelected&sItem=${inputText}`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" }
+                })
+                .then(response => {
+                    if (response.ok) {
+                        location.reload();
+                    }
+                });
+            }
+            }, false);
+        document.querySelectorAll(".remove-btn").forEach(button => {
+            button.addEventListener("click", function (e) {
+                const itemToRemove = e.target.getAttribute("data-item");
+                fetch(`?handler=RemoveSelected&sItem=${encodeURIComponent(itemToRemove)}`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" }
+                })
+                    .then(response => {
+                        if (response.ok) {
+                            location.reload();
+                        }
+                    });
+            });
+        });
+    </script>
+}
