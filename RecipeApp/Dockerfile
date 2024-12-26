@@ -11,7 +11,7 @@ RUN dotnet restore
 COPY ./RecipeApp/ ./
 RUN dotnet publish -c Release -o out
 
-COPY ./RecipeApp..Test/ ./
+COPY ./RecipeApp.Test/ ./
 RUN dotnet publish -c Release -o out
 
 FROM mcr.microsoft.com/dotnet/aspnet:8.0
