@@ -1,0 +1,25 @@
+﻿@page 
+@model RecipeApp.Pages.RecipeDetails
+@{
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Recipe Details";
+}
+
+<h1>@Model.Recipe.Title</h1>
+<p>@Model.Recipe.Instructions</p>
+
+<h2>Ingredients</h2>
+<ul>
+    @if (Model.Ingredients.Any())
+    {
+        foreach (var ingredient in Model.Ingredients)
+        {
+            <li>@ingredient.Name</li>
+        }
+    }
+    else
+    {
+        <p>No ingredients found for this recipe.</p>
+    }
+</ul>
+

@@ -1,4 +1,6 @@
-﻿<!DOCTYPE html>
+﻿@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+
+<!DOCTYPE html>
 <html>
 <head>
     <meta name="viewport" content="width=device-width" />
@@ -7,9 +9,10 @@
 </head>
 <body>
     <header>
-        <nav>
+         <nav>
             <a asp-page="/Index">Home</a>
-        </nav>
+            <a asp-page="/CreateRecipe">Add Recipe</a>
+        </nav> 
     </header>
     <main role="main" class="container">
         @RenderBody()

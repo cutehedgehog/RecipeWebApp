@@ -5,6 +5,7 @@ namespace RecipeApp.Repositories.Interfaces;
 public interface IRecipeRepository
 {
     public Task<Recipe> GetByIdAsync(int id, CancellationToken cancellationToken = default);
+    public Task<List<Recipe>> GetByCountryAsync(string country, CancellationToken cancellationToken = default);
     public Task CreateAsync(Recipe entity, CancellationToken cancellationToken = default);
     public Task CreateWithIngredientsAsync(Recipe entity, List<Ingredient> ingredients, CancellationToken cancellationToken = default);
     public Task<bool> UpdateAsync(Recipe entity, CancellationToken cancellationToken = default);

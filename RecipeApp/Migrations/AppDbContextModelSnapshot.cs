@@ -42,11 +42,9 @@ namespace RecipeApp.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Category")
-                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("ImageUrl")
-                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Instructions")
@@ -58,7 +56,6 @@ namespace RecipeApp.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("VideoSourceUrl")
-                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");

@@ -8,7 +8,7 @@
 <input type="text" list="foodlist" autocomplete=true id="inputItem" />
 
 <ul id="selectedItems">
-    @foreach (var sItem in Model.SelectedItems)
+    @foreach (var sItem in Model.StockSelectedItems)
     {
         <li>@sItem</li>
         <button class="remove-btn" data-item="@sItem">Delete</button>
@@ -53,7 +53,7 @@
         document.querySelectorAll(".remove-btn").forEach(button => {
             button.addEventListener("click", function (e) {
                 const itemToRemove = e.target.getAttribute("data-item");
-                fetch(`?handler=RemoveSelected&sItem=${encodeURIComponent(itemToRemove)}`, {
+                fetch(`?handler=RemoveSelectedFromStock&sItem=${encodeURIComponent(itemToRemove)}`, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" }
                 })
@@ -69,7 +69,7 @@
             fetch("?handler=GetRecipes", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ ingredients: @Html.Raw(Json.Serialize(Model.SelectedItems)) })
+                body: JSON.stringify({ ingredients: @Html.Raw(Json.Serialize(Model.StockSelectedItems)) })
             })
                 .then(response => response.json())
                 .then(data => {
@@ -80,7 +80,7 @@
                         recipeDiv.className = "recipe-item";
                         recipeDiv.textContent = recipe.title;
                         recipeDiv.addEventListener("click", function () {
-                            alert(`Name: ${recipe.title}\n${recipe.instructions}`);
+                            window.location.href = `/RecipeDetails?recipeId=${recipe.id}`;
                         });
                         recipesContainer.appendChild(recipeDiv);
                     });
