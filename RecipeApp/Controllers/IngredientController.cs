@@ -5,7 +5,7 @@ namespace RecipeApp.Controllers
 {
     [Route("api/ingredient")]
     [ApiController]
-    public class IngredientController: Controller
+    public class IngredientController : Controller
     {
 
         private readonly IIngredientService _ingredientService;
@@ -27,12 +27,12 @@ namespace RecipeApp.Controllers
             var ingredient = await _ingredientService.GetByIdAsync(id);
             if (ingredient == null)
                 return NotFound();
-            
+
             return Ok(ingredient);
         }
 
         [HttpGet("name/{name}")]
-       
+
         public async Task<IActionResult> GetByName(string name)
         {
             var ingredient = await _ingredientService.GetByNameAsync(name);

@@ -1,11 +1,7 @@
-using System.Collections.Generic;
-using System.Linq;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using RecipeApp.Models;
 using RecipeApp.Repositories.Interfaces;
-using RecipeApp.Repositories;
 
 namespace RecipeApp.Pages;
 [IgnoreAntiforgeryToken]
@@ -35,7 +31,7 @@ public class IndexModel : PageModel
 
     public IActionResult OnPostUpdateSelected(string sItem)
     {
-        
+
         if (!string.IsNullOrEmpty(sItem))
         {
             StockSelectedItems = this.GetListFromSession(SelectedItemsSessionKey);

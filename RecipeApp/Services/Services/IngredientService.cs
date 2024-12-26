@@ -1,6 +1,6 @@
-﻿using RecipeApp.Services.Interfaces;
+﻿using RecipeApp.Models;
 using RecipeApp.Repositories.Interfaces;
-using RecipeApp.Models;
+using RecipeApp.Services.Interfaces;
 
 namespace RecipeApp.Services.Services
 {
@@ -9,7 +9,7 @@ namespace RecipeApp.Services.Services
         private readonly IIngredientRepository _repository;
 
         public IngredientService(IIngredientRepository repository)
-        { 
+        {
             _repository = repository;
         }
 

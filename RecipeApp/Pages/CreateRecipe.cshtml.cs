@@ -1,10 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 using RecipeApp.Models;
 using RecipeApp.Repositories.Interfaces;
-using RecipeApp.Repositories.Repositories;
-using RecipeApp.Services.Services;
 
 namespace RecipeApp.Pages
 {
@@ -64,7 +61,7 @@ namespace RecipeApp.Pages
         }
 
         public IActionResult OnPostRemoveFromSelected(string sItem)
-        { 
+        {
             if (!string.IsNullOrEmpty(sItem))
             {
                 SelectedItems = this.GetListFromSession(AddItemsSessionKey);
@@ -85,7 +82,7 @@ namespace RecipeApp.Pages
             };
             List<Ingredient> ingredients = new List<Ingredient>();
 
-            foreach(var item in SelectedItems)
+            foreach (var item in SelectedItems)
             {
                 ingredients.Add(await _ingredientRepository.GetByNameAsync(item));
             }
