@@ -2,10 +2,10 @@
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build-env
 WORKDIR /app
 
-COPY ./src/RecipeApp/*.csproj ./
+COPY ./RecipeApp/*.csproj ./
 RUN dotnet restore
 
-COPY ./src/RecipeApp/ ./
+COPY ./RecipeApp/ ./
 RUN dotnet publish -c Release -o out
 
 FROM mcr.microsoft.com/dotnet/aspnet:8.0
