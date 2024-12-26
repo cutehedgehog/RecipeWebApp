@@ -33,6 +33,12 @@ public class RecipeRepository: IRecipeRepository
         var query = _dbSet.AsNoTracking().AsQueryable();
         return await query.FirstOrDefaultAsync(el => el.Id == id, cancellationToken);
     }
+
+    public async Task<List<Recipe>> GetByCountryAsync(string country, CancellationToken cancellationToken = default)
+    {
+        var recipes = await _context.Recipes.Where(r => r.AreaCategory == country).ToListAsync(cancellationToken);
+        return recipes;
+    }
     public async Task CreateAsync(Recipe entity, CancellationToken cancellationToken = default)
     {
         _dbSet.Add(entity);

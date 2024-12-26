@@ -11,28 +11,25 @@ namespace RecipeApp.Pages;
 [IgnoreAntiforgeryToken]
 public class IndexModel : PageModel
 {
-    private readonly IIngredientRepository _repository;
+    private readonly IIngredientRepository _ingredientRepository;
     private readonly IRecipeRepository _recipeRepository;
     private const string SelectedItemsSessionKey = "SelectedItems";
 
-
-    public IndexModel(IIngredientRepository repository, IRecipeRepository recipeRepository)
+    public IndexModel(IIngredientRepository ringredientRepository, IRecipeRepository recipeRepository)
     {
-        _repository = repository;
+        _ingredientRepository = ringredientRepository;
         _recipeRepository = recipeRepository;
     }
 
     public List<Ingredient> AutoCompleteItems { get; set; } = new List<Ingredient>();
     [BindProperty]
-    public List<string> SelectedItems { get; set; } = new List<string>();
+    public List<string> StockSelectedItems { get; set; } = new List<string>();
+    public List<Recipe> Recipes { get; set; } = new List<Recipe>();
 
     public async Task<IActionResult> OnGet()
     {
-        var sessionData = HttpContext.Session.GetString(SelectedItemsSessionKey);
-        SelectedItems = string.IsNullOrEmpty(sessionData)
-            ? new List<string>()
-            : sessionData.Split(',').ToList();
-        AutoCompleteItems = (await _repository.GetAllAsync()).ToList();
+        StockSelectedItems = this.GetListFromSession(SelectedItemsSessionKey);
+        AutoCompleteItems = (await _ingredientRepository.GetAllAsync()).ToList();
         return Page();
     }
 
@@ -41,51 +38,50 @@ public class IndexModel : PageModel
         
         if (!string.IsNullOrEmpty(sItem))
         {
-            var sessionData = HttpContext.Session.GetString(SelectedItemsSessionKey);
-            SelectedItems = string.IsNullOrEmpty(sessionData)
-                ? new List<string>()
-                : sessionData.Split(',').ToList();
+            StockSelectedItems = this.GetListFromSession(SelectedItemsSessionKey);
 
-            if (!SelectedItems.Contains(sItem, StringComparer.OrdinalIgnoreCase))
+            if (!StockSelectedItems.Contains(sItem, StringComparer.OrdinalIgnoreCase))
             {
-                SelectedItems.Add(sItem);
-                HttpContext.Session.SetString(SelectedItemsSessionKey, string.Join(",", SelectedItems));
+                StockSelectedItems.Add(sItem);
+                this.AddListToSession(SelectedItemsSessionKey, StockSelectedItems);
             }
         }
         return new OkResult();
 
-
     }
-    public IActionResult OnPostRemoveSelected(string sItem)
+    public IActionResult OnPostRemoveSelectedFromStock(string sItem)
     {
         if (!string.IsNullOrEmpty(sItem))
         {
-            var sessionData = HttpContext.Session.GetString(SelectedItemsSessionKey);
-            SelectedItems = string.IsNullOrEmpty(sessionData)
-                ? new List<string>()
-                : sessionData.Split(',').ToList();
-
-            SelectedItems.RemoveAll(item => item.Equals(sItem, StringComparison.OrdinalIgnoreCase));
-            HttpContext.Session.SetString(SelectedItemsSessionKey, string.Join(",", SelectedItems));
+            StockSelectedItems = this.GetListFromSession(SelectedItemsSessionKey);
+            StockSelectedItems.RemoveAll(item => item.Equals(sItem, StringComparison.OrdinalIgnoreCase));
+            this.AddListToSession(SelectedItemsSessionKey, StockSelectedItems);
         }
         return new OkResult();
     }
-    public List<Recipe> Recipes { get; set; } = new List<Recipe>();
 
+    public List<string> GetListFromSession(string key)
+    {
+        var sessionData = HttpContext.Session.GetString(key);
+        var list = string.IsNullOrEmpty(sessionData)
+               ? new List<string>()
+               : sessionData.Split(',').ToList();
+        return list;
+    }
+
+    public void AddListToSession(string key, List<string> list)
+    {
+        HttpContext.Session.SetString(key, string.Join(",", list));
+    }
     public async Task<IActionResult> OnPostGetRecipes([FromBody] IngredientRequest request)
     {
         Recipes = (await _recipeRepository.GetAllAsync()).ToList();
-        var ingredients = await _recipeRepository.GetIngredientsByRecipeIdAsync(Recipes[1].Id);
-        foreach (var i in ingredients)
-        {
-            Console.WriteLine(i.Name);
-        }
-        
+        /*
         if (request.Ingredients != null && request.Ingredients.Any())
         {
             Recipes = await _recipeRepository.GetRecipesByIngredientSubsetAsync(request.Ingredients);
         }
-        
+        */
 
         return new JsonResult(Recipes.Select(r => new { r.Id, r.Title, r.Instructions }));
     }

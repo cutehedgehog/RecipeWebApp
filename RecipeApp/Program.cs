@@ -34,6 +34,7 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
+app.UseSession();
 app.UseSwagger();
 app.UseSwaggerUI();
 
@@ -43,8 +44,9 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
-app.UseSession();
+
 app.UseAuthorization();
 app.MapRazorPages();
+
 
 app.Run();

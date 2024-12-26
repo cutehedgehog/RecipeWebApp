@@ -37,7 +37,7 @@ public class DbInitializer
             await context.SaveChangesAsync();
         }
 
-        for (int j = 0; j < 3; j++)
+        for (int j = 0; j < 40; j++)
         {
             var responseRecipes = await httpClient.GetStringAsync("https://www.themealdb.com/api/json/v1/1/random.php");
             var jsonRecipesDocument = JsonDocument.Parse(responseRecipes);
@@ -58,7 +58,7 @@ public class DbInitializer
                 await context.SaveChangesAsync();
                 int lastAddedRecipeId = recipe.Id;
 
-                var ingredients = new List<RecipeIngredient>(); 
+                var ingredients = new List<RecipeIngredient>();
 
                 for (int i = 1; i <= 20; i++)
                 {
@@ -71,11 +71,14 @@ public class DbInitializer
 
                         if (existingIngredient != null)
                         {
-                            ingredients.Add(new RecipeIngredient
+                            if (!ingredients.Any(ri => ri.RecipeId == lastAddedRecipeId && ri.IngredientId == existingIngredient.Id))
                             {
-                                RecipeId = lastAddedRecipeId,
-                                IngredientId = existingIngredient.Id,
-                            });
+                                ingredients.Add(new RecipeIngredient
+                                {
+                                    RecipeId = lastAddedRecipeId,
+                                    IngredientId = existingIngredient.Id,
+                                });
+                            }
                         }
                     }
                 }

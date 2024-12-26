@@ -10,7 +10,7 @@ using RecipeApp.Data;
 namespace RecipeApp.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20241216104920_InitialCreate")]
+    [Migration("20241226203057_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -45,11 +45,9 @@ namespace RecipeApp.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Category")
-                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("ImageUrl")
-                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Instructions")
@@ -61,7 +59,6 @@ namespace RecipeApp.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("VideoSourceUrl")
-                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");

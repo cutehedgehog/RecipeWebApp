@@ -30,11 +30,11 @@ namespace RecipeApp.Migrations
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
                     Title = table.Column<string>(type: "TEXT", nullable: false),
-                    Category = table.Column<string>(type: "TEXT", nullable: false),
+                    Category = table.Column<string>(type: "TEXT", nullable: true),
                     AreaCategory = table.Column<string>(type: "TEXT", nullable: false),
                     Instructions = table.Column<string>(type: "TEXT", nullable: false),
-                    ImageUrl = table.Column<string>(type: "TEXT", nullable: false),
-                    VideoSourceUrl = table.Column<string>(type: "TEXT", nullable: false)
+                    ImageUrl = table.Column<string>(type: "TEXT", nullable: true),
+                    VideoSourceUrl = table.Column<string>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
                 {
