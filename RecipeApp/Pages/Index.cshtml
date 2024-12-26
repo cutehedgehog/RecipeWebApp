@@ -80,7 +80,7 @@
                         recipeDiv.className = "recipe-item";
                         recipeDiv.textContent = recipe.title;
                         recipeDiv.addEventListener("click", function () {
-                            alert(`Name: ${recipe.title}\n${recipe.instructions}`);
+                            window.location.href = `/RecipeDetails?recipeId=${recipe.id}`;
                         });
                         recipesContainer.appendChild(recipeDiv);
                     });

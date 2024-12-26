@@ -87,7 +87,7 @@ public class IndexModel : PageModel
         }
         
 
-        return new JsonResult(Recipes.Select(r => new { r.Title, r.Instructions }));
+        return new JsonResult(Recipes.Select(r => new { r.Id, r.Title, r.Instructions }));
     }
 
     public class IngredientRequest
