@@ -25,6 +25,17 @@ body {
     transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
 }
 
+#countryItem {
+    margin-top: 20px;
+        width: calc(100% - 30px);
+        padding: 10px 15px;
+        font-size: 1rem;
+        border: 1px solid #ced4da;
+        border-radius: 4px;
+        margin-bottom: 15px;
+        transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    }
+
 #inputItem:focus {
     border-color: #80bdff;
     box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
@@ -111,8 +122,14 @@ datalist {
 }
 
 </style>
-
-<input type="text" list="foodlist" autocomplete=true id="inputItem" />
+<h2>Stock List</h2>
+<input type="text" placeholder="Start typing ingredient..." list="foodlist" autocomplete=true id="inputItem" />
+<datalist id="foodlist">
+    @foreach (var item in Model.AutoCompleteItems)
+    {
+        <option value="@item.Name" />
+    }
+</datalist>
 
 <ul id="selectedItems">
     @foreach (var sItem in Model.StockSelectedItems)
@@ -122,20 +139,24 @@ datalist {
         </li>
     }
 </ul>
-<datalist id="foodlist">
-    @foreach (var item in Model.AutoCompleteItems)
+
+<button id="getRecipesBtn">Get Recipes</button>
+
+<input type="text" placeholder="Start typing country..." list="countrylist" autocomplete=true id="countryItem" />
+<datalist id="countrylist">
+    @foreach (var item in Model.Countries)
     {
-        <option value="@item.Name" />
+        <option value="@item" />
     }
 </datalist>
-<button id="getRecipesBtn">Get Recipes</button>
+
 <div id="recipesContainer" style="height: 300px; overflow-y: scroll; border: 1px solid #ccc; padding: 10px; margin-top: 10px;">
 </div>
 
 @section Scripts {
     <script type="text/javascript">
         const textbox = document.getElementById("inputItem");
-        const datalist = document.getElementById('foodlist');
+        const countryfilter = document.getElementById("countryItem");
 
         textbox.addEventListener('keyup', function (e) { 
 
@@ -151,6 +172,33 @@ datalist {
                     }
                 });
                 textbox.textContent = "";
+            }
+        });
+
+
+        countryfilter.addEventListener('keyup', function (e) {
+
+            if (!isKeyboardEvent(e)) {
+                var inp= e.target.value.toLowerCase();
+                console.log(inp);
+                fetch(`?handler=FilterRecipes&country=${inp}`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" }
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        const recipesContainer = document.getElementById("recipesContainer");
+                        recipesContainer.innerHTML = "";
+                        data.forEach(recipe => {
+                            const recipeDiv = document.createElement("div");
+                            recipeDiv.className = "recipe-item";
+                            recipeDiv.textContent = recipe.title;
+                            recipeDiv.addEventListener("click", function () {
+                                window.location.href = `/RecipeDetails?recipeId=${recipe.id}`;
+                            });
+                            recipesContainer.appendChild(recipeDiv);
+                        });
+                    });
             }
         });
 
@@ -176,8 +224,7 @@ datalist {
         document.getElementById("getRecipesBtn").addEventListener("click", function () {
             fetch("?handler=GetRecipes", {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ ingredients: @Html.Raw(Json.Serialize(Model.StockSelectedItems)) })
+                headers: { "Content-Type": "application/json" }
             })
                 .then(response => response.json())
                 .then(data => {

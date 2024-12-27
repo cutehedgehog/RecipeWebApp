@@ -87,6 +87,8 @@ namespace RecipeApp.Pages
                 ingredients.Add(await _ingredientRepository.GetByNameAsync(item));
             }
             await _recipeRepository.CreateWithIngredientsAsync(recipe, ingredients);
+            this.OnPostSaveForm("", "", "");
+            this.AddListToSession(AddItemsSessionKey, new List<string>());
             return RedirectToPage("/Index");
         }
         public List<string> GetListFromSession(string key)

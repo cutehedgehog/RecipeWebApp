@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using RecipeApp.Models;
 using RecipeApp.Repositories.Interfaces;
+using System.ComponentModel;
 
 namespace RecipeApp.Pages;
 [IgnoreAntiforgeryToken]
@@ -18,6 +19,7 @@ public class IndexModel : PageModel
     }
 
     public List<Ingredient> AutoCompleteItems { get; set; } = new List<Ingredient>();
+    public List<string> Countries { get; set; } = new List<string>();
     [BindProperty]
     public List<string> StockSelectedItems { get; set; } = new List<string>();
     public List<Recipe> Recipes { get; set; } = new List<Recipe>();
@@ -26,6 +28,15 @@ public class IndexModel : PageModel
     {
         StockSelectedItems = this.GetListFromSession(SelectedItemsSessionKey);
         AutoCompleteItems = (await _ingredientRepository.GetAllAsync()).ToList();
+        var recipes = (await _recipeRepository.GetAllAsync()).ToList();
+        Countries.Add("All");
+        foreach (var recipe in recipes)
+        {
+            if (!Countries.Contains(recipe.AreaCategory))
+            {
+                Countries.Add(recipe.AreaCategory);
+            }
+        }
         return Page();
     }
 
@@ -69,20 +80,38 @@ public class IndexModel : PageModel
     {
         HttpContext.Session.SetString(key, string.Join(",", list));
     }
-    public async Task<IActionResult> OnPostGetRecipes([FromBody] IngredientRequest request)
+    public async Task<IActionResult> OnPostGetRecipes()
     {
-
-        if (request.Ingredients != null && request.Ingredients.Any())
+        StockSelectedItems = this.GetListFromSession(SelectedItemsSessionKey);
+        if ( StockSelectedItems!= null && StockSelectedItems.Any())
         {
-            Recipes = await _recipeRepository.GetRecipesByIngredientSubsetAsync(request.Ingredients);
+            Recipes = await _recipeRepository.GetRecipesByIngredientSubsetAsync(StockSelectedItems);
         }
-
+        return new JsonResult(Recipes.Select(r => new { r.Id, r.Title, r.Instructions }));
+    }
+    public async Task<IActionResult> OnPostFilterRecipesAsync(string country)
+    {
+        StockSelectedItems = this.GetListFromSession(SelectedItemsSessionKey);
+        if (StockSelectedItems != null && StockSelectedItems.Any())
+        {
+            Recipes = await _recipeRepository.GetRecipesByIngredientSubsetAsync(StockSelectedItems);
+        }
+        if (!country.Equals("all"))
+        {
+            Recipes = Recipes.Where(e => e.AreaCategory.ToLower() == country).ToList();
+        }
+       
         return new JsonResult(Recipes.Select(r => new { r.Id, r.Title, r.Instructions }));
     }
 
     public class IngredientRequest
     {
         public List<string> Ingredients { get; set; } = new List<string>();
+    }
+
+    public class RecipeRequest
+    {
+        public List<Recipe> Recipes { get; set; } = new List<Recipe>();
     }
 
 }
