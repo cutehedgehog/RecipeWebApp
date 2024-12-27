@@ -1,0 +1,245 @@
+﻿@page
+@model RecipeApp.Pages.IndexModel
+@{
+    ViewData["Title"] = "Home";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<style>
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f8f9fa;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box; 
+}
+
+#inputItem {
+    width: calc(100% - 30px);
+    padding: 10px 15px;
+    font-size: 1rem;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    margin-bottom: 15px;
+    transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+#countryItem {
+    margin-top: 20px;
+        width: calc(100% - 30px);
+        padding: 10px 15px;
+        font-size: 1rem;
+        border: 1px solid #ced4da;
+        border-radius: 4px;
+        margin-bottom: 15px;
+        transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    }
+
+#inputItem:focus {
+    border-color: #80bdff;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+}
+
+button {
+    font-size: 1rem;
+    padding: 10px 15px;
+    color: #fff;
+    background-color: #007bff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+#getRecipesBtn:hover {
+    background-color: #0056b3;
+}
+
+.remove-btn {
+    font-size: 0.9rem;
+    color: #dc3545;
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+.remove-btn:hover {
+    text-decoration: underline;
+}
+
+datalist {
+    width: 100%;
+}
+
+#recipesContainer {
+    height: 300px;
+    overflow-y: auto;
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin-top: 10px;
+    background-color: #ffffff;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+#getRecipesBtn {
+    width: 100%;
+    margin-top: 10px;
+}
+
+#selectedItems {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 15px;
+}
+
+#selectedItems li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 5px 15px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin-bottom: 5px;
+    background-color: #f8f9fa;
+ }
+
+#selectedItems li:hover {
+     background-color: #e9ecef;
+}
+    
+.remove-btn {
+    font-size: 0.9rem;
+    color: #dc3545;
+    background: none;
+    border: none;
+    cursor: pointer;
+    margin-left: 10px; 
+}
+
+.remove-btn:hover {
+    text-decoration: underline;
+}
+
+</style>
+<h2>Stock List</h2>
+<input type="text" placeholder="Start typing ingredient..." list="foodlist" autocomplete=true id="inputItem" />
+<datalist id="foodlist">
+    @foreach (var item in Model.AutoCompleteItems)
+    {
+        <option value="@item.Name" />
+    }
+</datalist>
+
+<ul id="selectedItems">
+    @foreach (var sItem in Model.StockSelectedItems)
+    {
+        <li>@sItem
+        <button class="remove-btn" data-item="@sItem">Delete</button>
+        </li>
+    }
+</ul>
+
+<button id="getRecipesBtn">Get Recipes</button>
+
+<input type="text" placeholder="Start typing country..." list="countrylist" autocomplete=true id="countryItem" />
+<datalist id="countrylist">
+    @foreach (var item in Model.Countries)
+    {
+        <option value="@item" />
+    }
+</datalist>
+
+<div id="recipesContainer" style="height: 300px; overflow-y: scroll; border: 1px solid #ccc; padding: 10px; margin-top: 10px;">
+</div>
+
+@section Scripts {
+    <script type="text/javascript">
+        const textbox = document.getElementById("inputItem");
+        const countryfilter = document.getElementById("countryItem");
+
+        textbox.addEventListener('keyup', function (e) { 
+
+            if (!isKeyboardEvent(e)) {
+                var inputText = e.target.value.toLowerCase();
+                fetch(`?handler=UpdateSelected&sItem=${inputText}`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" }
+                })
+                .then(response => {
+                    if (response.ok) {
+                        location.reload();
+                    }
+                });
+                textbox.textContent = "";
+            }
+        });
+
+
+        countryfilter.addEventListener('keyup', function (e) {
+
+            if (!isKeyboardEvent(e)) {
+                var inp= e.target.value.toLowerCase();
+                console.log(inp);
+                fetch(`?handler=FilterRecipes&country=${inp}`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" }
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        const recipesContainer = document.getElementById("recipesContainer");
+                        recipesContainer.innerHTML = "";
+                        data.forEach(recipe => {
+                            const recipeDiv = document.createElement("div");
+                            recipeDiv.className = "recipe-item";
+                            recipeDiv.textContent = recipe.title;
+                            recipeDiv.addEventListener("click", function () {
+                                window.location.href = `/RecipeDetails?recipeId=${recipe.id}`;
+                            });
+                            recipesContainer.appendChild(recipeDiv);
+                        });
+                    });
+            }
+        });
+
+        function isKeyboardEvent(e) {
+            return (e instanceof KeyboardEvent);
+        }
+
+        document.querySelectorAll(".remove-btn").forEach(button => {
+            button.addEventListener("click", function (e) {
+                const itemToRemove = e.target.getAttribute("data-item");
+                fetch(`?handler=RemoveSelectedFromStock&sItem=${encodeURIComponent(itemToRemove)}`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" }
+                })
+                .then(response => {
+                    if (response.ok) {
+                        location.reload();
+                    }
+                });
+            });
+        });
+
+        document.getElementById("getRecipesBtn").addEventListener("click", function () {
+            fetch("?handler=GetRecipes", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" }
+            })
+                .then(response => response.json())
+                .then(data => {
+                    const recipesContainer = document.getElementById("recipesContainer");
+                    recipesContainer.innerHTML = "";
+                    data.forEach(recipe => {
+                        const recipeDiv = document.createElement("div");
+                        recipeDiv.className = "recipe-item";
+                        recipeDiv.textContent = recipe.title;
+                        recipeDiv.addEventListener("click", function () {
+                            window.location.href = `/RecipeDetails?recipeId=${recipe.id}`;
+                        });
+                        recipesContainer.appendChild(recipeDiv);
+                    });
+                });
+        });
+    </script>
+}

@@ -1,0 +1,73 @@
+﻿@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>@ViewData["Title"]</title>
+    <link rel="stylesheet" href="css/site.css" />
+</head>
+
+<style>
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f8f9fa;
+    box-sizing: border-box;
+}
+header {
+    background-color: #007bff;
+    color: #fff;
+    margin: 0;
+    padding: 10px 0px; 
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 1000;
+}
+
+header nav {
+    display: flex;
+    justify-content: flex-start;
+    gap: 15px;
+    margin-left: 10px;
+}
+
+header nav a {
+    color: #fff;
+    text-decoration: none;
+    font-size: 1rem;
+    padding: 5px 10px;
+    border-radius: 4px;
+    transition: background-color 0.3s ease-in-out;
+}
+
+header nav a:hover {
+    background-color: #0056b3;
+}
+
+main.container {
+    margin: 60px auto;
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    max-width: 1400px;
+}
+
+</style>
+<body>
+    <header>
+         <nav>
+            <a asp-page="/Index">Home</a>
+            <a asp-page="/CreateRecipe">Add Recipe</a>
+        </nav> 
+    </header>
+    <main role="main" class="container">
+        @RenderBody()
+    </main>
+    @RenderSection("Scripts", required: false)
+</body>
+</html>
