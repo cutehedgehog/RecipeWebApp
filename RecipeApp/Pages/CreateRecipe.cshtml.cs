@@ -111,7 +111,7 @@ namespace RecipeApp.Pages
         }
         public void AddStringToSession(string key, string str)
         {
-            HttpContext.Session.SetString(key, str);
+            HttpContext.Session.SetString(key, str ?? string.Empty);
         }
 
         public void OnPostSaveForm(string title, string category, string instructions)

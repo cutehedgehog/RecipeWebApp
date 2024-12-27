@@ -5,11 +5,6 @@ VisualStudioVersion = 17.9.34622.214
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RecipeApp", "RecipeApp.csproj", "{6EF5E8E4-8FE4-4A1C-98E4-47AC41028A38}"
 EndProject
-<<<<<<< HEAD
-=======
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RecipeApp.Test", "..\RecipeApp.Test\RecipeApp.Test.csproj", "{DB6F7F65-FBEC-4B20-8F40-FEF3D48B6184}"
-EndProject
->>>>>>> develop
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

@@ -71,13 +71,11 @@ public class IndexModel : PageModel
     }
     public async Task<IActionResult> OnPostGetRecipes([FromBody] IngredientRequest request)
     {
-        Recipes = (await _recipeRepository.GetAllAsync()).ToList();
-        /*
+
         if (request.Ingredients != null && request.Ingredients.Any())
         {
             Recipes = await _recipeRepository.GetRecipesByIngredientSubsetAsync(request.Ingredients);
         }
-        */
 
         return new JsonResult(Recipes.Select(r => new { r.Id, r.Title, r.Instructions }));
     }
