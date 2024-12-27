@@ -183,7 +183,17 @@ input[type="text"], textarea, datalist {
             })
                 .then(response => {
                     if (response.ok) {
-                        location.reload();
+                        const titleContent = document.getElementById("title").value;
+                        const areaCategoryContent = document.getElementById("areaCategory").value;
+                        const instructionsContent = document.getElementById("instructions").value;
+
+                        return fetch(`?handler=SaveForm&title=${encodeURIComponent(titleContent)}&category=${encodeURIComponent(areaCategoryContent)}&instructions=${encodeURIComponent(instructionsContent)}`, {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" }
+                        })
+                        .then(() => {
+                            location.reload();
+                        });
                     }
                 });
             textbox.value = "";
@@ -211,9 +221,9 @@ input[type="text"], textarea, datalist {
                             method: "POST",
                             headers: { "Content-Type": "application/json" }
                         })
-                            .then(() => {
-                                location.reload();
-                            });
+                        .then(() => {
+                            location.reload();
+                        });
                     }
                 });
         });
