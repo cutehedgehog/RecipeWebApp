@@ -1,6 +1,6 @@
 ﻿using RecipeApp.Models;
-using RecipeApp.Services.Interfaces;
 using RecipeApp.Repositories.Interfaces;
+using RecipeApp.Services.Interfaces;
 
 namespace RecipeApp.Services.Services
 {

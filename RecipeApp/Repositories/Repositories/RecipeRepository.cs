@@ -2,12 +2,11 @@
 using RecipeApp.Data;
 using RecipeApp.Models;
 using RecipeApp.Repositories.Interfaces;
-using System.Collections.Generic;
 using System.Linq.Expressions;
 
 namespace RecipeApp.Repositories.Repositories;
 
-public class RecipeRepository: IRecipeRepository
+public class RecipeRepository : IRecipeRepository
 {
     protected readonly AppDbContext _context;
 
@@ -23,7 +22,7 @@ public class RecipeRepository: IRecipeRepository
     {
         return await _context.Recipes
             .Where(recipe => recipe.RecipeIngredients
-                .All(ri => ingredientNames.Contains(ri.Ingredient.Name))) 
+                .All(ri => ingredientNames.Contains(ri.Ingredient.Name)))
             .Include(r => r.RecipeIngredients)
                 .ThenInclude(ri => ri.Ingredient)
             .ToListAsync();

@@ -1,14 +1,13 @@
-﻿using RecipeApp.Services.Interfaces;
+﻿using RecipeApp.Models;
 using RecipeApp.Repositories.Interfaces;
-using RecipeApp.Models;
-using Microsoft.EntityFrameworkCore;
+using RecipeApp.Services.Interfaces;
 
 namespace RecipeApp.Services.Services
 {
     public class SearchService : ISearchService
     {
         private readonly IRecipeRepository _repository;
-        public SearchService(IRecipeRepository repository) 
+        public SearchService(IRecipeRepository repository)
         {
             _repository = repository;
         }
